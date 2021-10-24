@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<style>
+  html {
+    width: 100%;
+    height: 100vh;
+  }
+
+  body {
+    background-image: url(./image/sukui\ kingyo.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+  }
+
+  .hole {
+    width: 100px;
+    height: 100px;
+    border: 1px solid transparent;
+  }
+
+  .shukken {
+    background-image: url(./image/kinngyo.png);
+  }
+
+  .utta {
+    background: transparent;
+    transition: 0.2s;
+  }
+
+  #game {
+    cursor: url(./image/ami.png)50 50, auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 800px;
+    height: 500px;
+    background-image: url(./image/mizu.jpg);
+    border-radius: 10px;
+  }
+
+  .game-feild {
+    width: 100%;
+    height: 700px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+
+  .tank {
+    width: 870px;
+    height: 550px;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(rgb(255, 208, 155)25%,
+        rgb(182, 155, 124)50%,
+        rgb(204, 162, 123)75%,
+        rgb(156, 110, 67)100%);
+    border-radius: 0;
+    z-index: 1;
+    box-shadow: 0px 10px 10px 0 rgb(139, 95, 28);
+  }
+
+  .point-box {
+    width: 1250px;
+    height: 550px;
+    position: absolute;
+    z-index: -2;
+  }
+
+  #start-box {
+    width: 100%;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+  }
+
+  #start {
+    width: 200px;
+    height: 50px;
+    background: rgb(235, 219, 170);
+    color: black;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  #score {
+    font-size: 70px;
+    display: flex;
+    align-items: center;
+    color: white;
+    text-shadow: 5px 5px 2px rgba(0, 0, 0, 0.5);
+  }
+
+  .kingyo {
+    display: flex;
+  }
+
+  .point {
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 5px 5px 2px rgba(0, 0, 0, 0.5);
+  }
+
+  .point .saikou {
+    font-size: 30px;
+  }
+
+  .tokuten {
+    width: 100px;
+    height: 470px;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+</style>
+
+<body>
+
+  <div class="game-feild">
+
+    <div class="point-box">
+      <div class="tokuten">
+        <div class="kingyo">
+          <img src="./kinngyo.png"><span id="score">0</span>
+        </div>
+        <div class="point">
+          <p class="saikou">最高点</p>
+          <p>玩家：</p><span id="highname">〇〇〇</span>
+          <p>金魚數：</p><span id="highscore">0</span>
+        </div>
+      </div>
+    </div>
+    <div class="tank">
+      <table id="game">
+        <tr>
+          <td class="hole" id="hole28"></td>
+          <td class="hole" id="hole27"></td>
+          <td class="hole" id="hole26"></td>
+          <td class="hole" id="hole25"></td>
+          <td class="hole" id="hole24"></td>
+          <td class="hole" id="hole23"></td>
+          <td class="hole" id="hole22"></td>
+        </tr>
+
+        <tr>
+          <td class="hole" id="hole21"></td>
+          <td class="hole" id="hole20"></td>
+          <td class="hole" id="hole19"></td>
+          <td class="hole" id="hole18"></td>
+          <td class="hole" id="hole17"></td>
+          <td class="hole" id="hole16"></td>
+          <td class="hole" id="hole15"></td>
+        </tr>
+
+        <tr>
+          <td class="hole" id="hole14"></td>
+          <td class="hole" id="hole13"></td>
+          <td class="hole" id="hole12"></td>
+          <td class="hole" id="hole11"></td>
+          <td class="hole" id="hole10"></td>
+          <td class="hole" id="hole9"></td>
+          <td class="hole" id="hole8"></td>
+        </tr>
+        <tr>
+          <td class="hole" id="hole7"></td>
+          <td class="hole" id="hole6"></td>
+          <td class="hole" id="hole5"></td>
+          <td class="hole" id="hole4"></td>
+          <td class="hole" id="hole3"></td>
+          <td class="hole" id="hole2"></td>
+          <td class="hole" id="hole1"></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div id="start-box">
+    <input type="button" value="START" id="start"><br>
+  </div>
+
+
+  <script>
+    const holes = document.getElementsByClassName('hole')
+    const start = document.getElementById('start')
+    const scoreText = document.getElementById('score')
+    const highnameText = document.getElementById('highname')
+    const highscoreText = document.getElementById('highscore')
+
+
+    // 最高分
+    const high = { score: 0, name: '〇〇〇' }
+    // 計分
+    let score = 0
+    // 是否在遊戲中
+    let timer = 0
+    // 音效
+    const audio = new Audio()
+    // 讀取資料
+    const storage = JSON.parse(localStorage.getItem('dadishu'))
+    // 如果有資料
+    if (storage) {
+      high.name = storage.name
+      high.score = storage.score
+      // 修改最高分顯示文字
+      highnameText.innerText = high.name
+      highscoreText.innerText = high.score
+    }
+    start.onclick = () => {
+      // 停用開始按鈕
+      start.disabled = true
+
+      // 分數重設
+      score = 0
+      scoreText.innerText = score
+      // 每秒變化一次
+      timer = setInterval(game, 1500)
+      game()
+      // 十秒後遊戲結束。
+      setTimeout(end, 10 * 2000)
+    }
+    // 每秒變換
+    const game = () => {
+      for (const hole of holes) {
+        hole.classList.remove('shukken')
+        hole.classList.remove('utta')
+      }
+      for (let i = 0; i < 5; i++) {
+        holes[Math.round(Math.random() * (holes.length - 1))].classList.add('shukken')
+      }
+    }
+
+    const end = () => {
+      clearInterval(timer)
+      for (const hole of holes) {
+        hole.classList.remove('shukken')
+        hole.classList.remove('utta')
+      }
+
+      start.disabled = false
+      alert(`時間到，你撈到了${score}隻金魚`)
+
+
+      if (score > high.score) {
+        // audio.src='./rihai.mp3'
+        // audio.play()
+
+        const input = prompt('最高分，請輸入名字。')
+        high.score = score
+        high.name = input || '〇〇〇'
+
+        highnameText.innerText = high.name
+        highscoreText.innerText = high.score
+
+
+        localStorage.setItem('dadishu', JSON.stringify(high))
+      }
+    }
+
+    for (const hole of holes) {
+      hole.onclick = () => {
+        if (hole.classList.contains('shukken')) {
+          hole.classList.replace('shukken', 'utta')
+          score++
+          scoreText.innerText = score
+        }
+      }
+    }
+
+  </script>
+</body>
+
+</html>
